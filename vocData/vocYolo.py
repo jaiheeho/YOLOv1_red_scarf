@@ -69,20 +69,17 @@ def encode_target_yolo(bbox, labels, S, B, C):
     wh = bbox[:,2:]-bbox[:,:2]
     cxcy = (bbox[:,2:]+bbox[:,:2])/2
     for i in range(cxcy.size()[0]):
-        print (bbox[i])
-        print (cxcy[i])
         cxcy_sample = cxcy[i]
         ij = (cxcy_sample/cell_size).ceil()-1 #
-        print (ij)
         xy = ij*cell_size
-        print (xy)
         delta_xy = (cxcy_sample -xy)/cell_size
-        print (delta_xy)
-        print (wh[i])
+        wh[i] = torch.sqrt(wh[i])
         for j in range(B):
             target[int(ij[1]),int(ij[0]), j * 5 : 2 + j * 5] = delta_xy
             target[int(ij[1]),int(ij[0]), 2 + j * 5 : 4 + j * 5] = wh[i]
             target[int(ij[1]),int(ij[0]), 4 + j * 5] = 1
+        
+        target[int(ij[1]),int(ij[0]),5+(B-1) * 5 : ] = torch.zeros(C)
         target[int(ij[1]),int(ij[0]),int(labels[i])+ 5 + (B-1) * 5] = 1
 
     return target

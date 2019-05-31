@@ -190,7 +190,10 @@ class Experiment(object):
         # Load checkpoint and check compatibility
         if os.path.isfile(config_path):
             with open(config_path, 'r') as f:
-                if f.read()[:-1] != repr(self):
+                temp = f.read()[:-1]
+                if temp != repr(self):
+                    print (temp)
+                    print (self)
                     raise ValueError(
                         "Cannot create this experiment: "
                         "I found a checkpoint conflicting with the current setting.")
@@ -206,8 +209,8 @@ class Experiment(object):
     def setting(self):
         """Returns the setting of the experiment."""
         return {'Net': self.net,
-                'TrainSet': self.train_set,
-                'ValSet': self.val_set,
+#                 'TrainSet': self.train_set,
+#                 'ValSet': self.val_set,
                 'Optimizer': self.optimizer,
                 'StatsManager': self.stats_manager,
                 'BatchSize': self.batch_size,
