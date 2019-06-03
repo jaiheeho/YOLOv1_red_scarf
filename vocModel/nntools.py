@@ -300,7 +300,7 @@ class Experiment(object):
                 self.history.append(
                     (self.stats_manager.summarize(), self.evaluate()))
             print("Epoch {} loss :{:.4f}(Time: {:.2f}s)".format(
-                self.epoch, self.stats_manager.summarize()['loss'],time.time() - s))
+                self.epoch, self.history[-1]['loss'],time.time() - s))
             self.save()
             if plot is not None:
                 plot(self)
