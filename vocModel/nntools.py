@@ -7,8 +7,11 @@ import os
 import time
 import torch
 from torch import nn
+from torch.utils.data.sampler import SubsetRandomSampler
+
 import torch.utils.data as td
 from abc import ABC, abstractmethod
+import numpy as np
 
 class NeuralNetwork(nn.Module, ABC):
     """An abstract class representing a neural network.
@@ -149,8 +152,8 @@ class Experiment(object):
 
     Arguments:
         net (NeuralNetork): a neural network.
-        train_set (Dataset): a training data set.
-        val_set (Dataset): a validation data set.
+        train_loader (DataLoader): train Loader.
+        val_loader (DataLoader): validation Loader.
         stats_manager (StatsManager): a stats manager.
         output_dir (string, optional): path where to load/save checkpoints. If
             None, ``output_dir`` is set to "experiment_TIMESTAMP" where
@@ -164,15 +167,9 @@ class Experiment(object):
             set and the validation set. (default: False)
     """
 
-    def __init__(self, net, train_set, val_set, optimizer, stats_manager,
+    def __init__(self, net, train_loader, val_loader, optimizer, stats_manager,
                  output_dir=None, batch_size=16, perform_validation_during_training=False):
-
-        # Define data loaders
-        train_loader = td.DataLoader(train_set, batch_size=batch_size, shuffle=True,
-                                     drop_last=True, pin_memory=True)
-        val_loader = td.DataLoader(val_set, batch_size=batch_size, shuffle=False,
-                                   drop_last=True, pin_memory=True)
-
+        
         # Initialize history
         history = []
 
@@ -279,6 +276,7 @@ class Experiment(object):
         self.net.train()
         self.stats_manager.init()
         start_epoch = self.epoch
+        best_val_loss = 20000.0
         print("Start/Continue training from epoch {}".format(start_epoch))
         if plot is not None:
             plot(self)
@@ -300,8 +298,12 @@ class Experiment(object):
                 self.history.append(
                     (self.stats_manager.summarize(), self.evaluate()))
             print("Epoch {} loss :{:.4f}(Time: {:.2f}s)".format(
-                self.epoch, self.history[-1]['loss'],time.time() - s))
-            self.save()
+                self.epoch, self.history[-1][0]['loss'],time.time() - s))
+            
+            if best_val_loss > self.history[-1][1]['loss']:
+                best_val_loss = self.history[-1][1]['loss']
+                self.save()
+                
             if plot is not None:
                 plot(self)
         print("Finish training for {} epochs".format(num_epochs))
