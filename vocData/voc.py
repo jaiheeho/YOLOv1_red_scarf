@@ -83,9 +83,9 @@ class VOCDetection(VisionDataset):
         target = self.parse_voc_xml(
             ET.parse(self.annotations[index]).getroot())
 
-        img, target = self.transforms(img, target)
+        img, target, bboxes, labels = self.transforms(img, target)
         
-        return img, target
+        return img, target, bboxes, labels
 
 
     def __len__(self):
@@ -109,50 +109,6 @@ class VOCDetection(VisionDataset):
             if not children:
                 voc_dict[node.tag] = text
         return voc_dict
-    
-    
-# def voc_yolo_transforms(img, target, S=7, B =2, C=20):
-#     transform = tv.transforms.Compose([
-#         tv.transforms.Resize((448, 448)),
-#         tv.transforms.ToTensor(),
-#         tv.transforms.Normalize(mean=[0.485, 0.456, 0.406],
-#                                  std=[0.229, 0.224, 0.225])
-#     ])
-    
-#     img = transform(img)
-#     size = target['annotation']['size']
-#     width, height = np.float(size['width']), np.float(size['height'])
-    
-#     labels = []
-#     bboxes = []
-    
-#     if type(target['annotation']['object']) == dict :
-#         obj = target['annotation']['object']
-        
-#         class_idx = int(class_dict[obj['name']])
-#         labels.append(class_idx)
-#         bndbox = obj['bndbox']
-        
-#         xmin, ymin, xmax, ymax = np.float(bndbox['xmin']), np.float(bndbox['ymin']), \
-#         np.float(bndbox['xmax']), np.float(bndbox['ymax'])
-#         bboxes.append([xmin, ymin, xmax, ymax])
-#     else :
-#         for obj in target['annotation']['object']:
-            
-#             class_idx = int(class_dict[obj['name']])
-#             labels.append(class_idx)
-#             bndbox = obj['bndbox']
-            
-#             xmin, ymin, xmax, ymax = np.float(bndbox['xmin']), np.float(bndbox['ymin']), \
-#             np.float(bndbox['xmax']), np.float(bndbox['ymax'])  
-#             bboxes.append([xmin, ymin, xmax, ymax])
-            
-    
-#     bboxes = torch.Tensor(bboxes) / torch.Tensor([width, height, width, height])
-#     labels = torch.LongTensor(labels)
-    
-#     target = encode_target_yolo (bboxes, labels, S, B, C)
-#     return img, target
 
 
 def voc_yolo_transforms(img, target, S=7, B =2, C=20):
@@ -197,7 +153,15 @@ def voc_yolo_transforms(img, target, S=7, B =2, C=20):
     labels = torch.LongTensor(labels)
     
     target = encode_target_yolo (bboxes, labels, S, B, C)
-    return img, target
+    
+    max_bbox = 60
+    bboxes_extended = torch.zeros((max_bbox,4))
+    bboxes_extended[:bboxes.size()[0],:] = bboxes
+    labels_extended = torch.zeros((max_bbox,1))
+    labels_extended[:labels.size()[0],:] = labels.view(-1,1)
+    
+    
+    return img, target, bboxes_extended, labels_extended
                                            
 def encode_target_yolo(bbox, labels, S, B, C):
     n_elements = B * 5 + C

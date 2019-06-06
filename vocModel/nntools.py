@@ -282,7 +282,7 @@ class Experiment(object):
         for epoch in range(start_epoch, num_epochs):
             s = time.time()
             self.stats_manager.init()
-            for x, d in self.train_loader:
+            for x, d, _, _ in self.train_loader:
                 x, d = x.to(self.net.device), d.to(self.net.device)
                 self.optimizer.zero_grad()
                 y = self.net.forward(x)
@@ -296,8 +296,8 @@ class Experiment(object):
             else:
                 self.history.append(
                     (self.stats_manager.summarize(), self.evaluate()))
-            print("Epoch {} loss :{:.4f}(Time: {:.2f}s)".format(
-                self.epoch, self.history[-1][0]['loss'],time.time() - s))
+            print("Epoch {} loss :{:.4f}, val loss : {:.4f} (Time: {:.2f}s)".format(
+                self.epoch, self.history[-1][0]['loss'], self.history[-1][1]['loss'], time.time() - s))
             
             if best_val_loss > self.history[-1][1]['loss']:
                 best_val_loss = self.history[-1][1]['loss']
@@ -315,7 +315,7 @@ class Experiment(object):
         self.stats_manager.init()
         self.net.eval()
         with torch.no_grad():
-            for x, d in self.val_loader:
+            for x, d, _, _ in self.val_loader:
                 x, d = x.to(self.net.device), d.to(self.net.device)
                 y = self.net.forward(x)
                 loss = self.net.criterion(y, d)
