@@ -166,7 +166,7 @@ class Experiment(object):
             set and the validation set. (default: False)
     """
 
-    def __init__(self, net, train_loader, val_loader, optimizer, stats_manager,
+    def __init__(self, net, train_loader, val_loader, optimizer, scheduler, stats_manager,
                  output_dir=None, batch_size=16, perform_validation_during_training=False):
         
         # Initialize history
@@ -291,6 +291,8 @@ class Experiment(object):
                 self.optimizer.step()
                 with torch.no_grad():
                     self.stats_manager.accumulate(loss.item(), x, y, d)
+            
+            self.scheduler.step()
             if not self.perform_validation_during_training:
                 self.history.append(self.stats_manager.summarize())
             else:
