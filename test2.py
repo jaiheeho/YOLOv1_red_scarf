@@ -24,7 +24,7 @@ print(device)
 
 dataset_root_dir = "/datasets/ee285f-public/PascalVOC2012/"
 lr = 1e-3
-batch_size = 8
+batch_size = 24
 
 def voc_data_loader():
     dataset = voc.VOCDetection(dataset_root_dir,  image_set = 'trainval')
@@ -71,6 +71,6 @@ optimizer = torch.optim.SGD(net.parameters(), lr=lr, momentum=0.9, weight_decay 
 scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[30,60], gamma=0.1)
 stats_manager = vocModel.DetectionStatsManager()
 exp1 = nt.Experiment(net, train_loader, val_loader, optimizer, stats_manager,batch_size=batch_size,
-                     output_dir="data/resnet_3", perform_validation_during_training=True)
+                     output_dir="data/resnet_newYOLOLOSS", perform_validation_during_training=True)
 
 exp1.run(num_epochs=100)
