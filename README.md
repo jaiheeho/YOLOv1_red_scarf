@@ -1,5 +1,5 @@
 # ECE 285 Object Detection Project 
-# project c : YOLO 
+## project c : YOLO 
 
 ## 1. Train 
 Everything about train is in "yolo_train.ipynb" jupyter notebook file. Learning process code is written very similar to course assignment using nntools.py at the end of file we have code which generate the result images from neural net.
