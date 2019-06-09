@@ -207,7 +207,7 @@ class Experiment(object):
         return {'Net': self.net,
 #                 'TrainSet': self.train_set,
 #                 'ValSet': self.val_set,
-                'Optimizer': self.optimizer,
+#                 'Optimizer': self.optimizer,
                 'StatsManager': self.stats_manager,
                 'BatchSize': self.batch_size,
                 'PerformValidationDuringTraining': self.perform_validation_during_training}
