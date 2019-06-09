@@ -7,4 +7,5 @@ test6
 test7
 data/
 VOCdevkit/
+saved_model/
 VOC2012test.tar

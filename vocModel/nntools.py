@@ -303,7 +303,7 @@ class Experiment(object):
             
             if best_val_loss > self.history[-1][1]['loss']:
                 best_val_loss = self.history[-1][1]['loss']
-                self.save()
+            self.save()
                 
             if plot is not None:
                 plot(self)
