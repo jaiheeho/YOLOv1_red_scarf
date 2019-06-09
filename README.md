@@ -9,6 +9,8 @@ Everything about train is in "yolo_train.ipynb" jupyter notebook file. Learning 
 Calculate mean Average Precision is in "mAP.ipynb" jupter notebook file. Running the jupyter code is very straightforward.
 
 ## 3. DEMO
+### 3-1 demo_simple_resut.ipynb
+This jupyter notebook file simply shows the figures in paper.
 
 ## 4. Code
 
